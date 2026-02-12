@@ -1,0 +1,15 @@
+{
+  "name": "@corphish/prettier",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Shared Prettier configuration for Corphish monorepo",
+  "main": "index.js",
+  "files": [
+    "index.js"
+  ],
+  "devDependencies": {
+    "@ianvs/prettier-plugin-sort-imports": "^4.7.0",
+    "prettier": "^3.8.1",
+    "prettier-plugin-tailwindcss": "^0.7.2"
+  }
+}

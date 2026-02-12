@@ -1,0 +1,3 @@
+{
+  "extends": "@corphish/tsconfig/base.json"
+}

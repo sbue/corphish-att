@@ -1,0 +1,24 @@
+{
+  "name": "@corphish/config",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "clean": "rm -rf node_modules .turbo dist tsconfig.tsbuildinfo",
+    "type-check": "tsc -p tsconfig.json --noEmit",
+    "lint": "eslint . --max-warnings 0",
+    "format": "prettier --write \"src/**/*.{ts,js,json,md}\"",
+    "format:check": "prettier --check \"src/**/*.{ts,js,json,md}\""
+  },
+  "devDependencies": {
+    "@corphish/eslint": "workspace:*",
+    "@corphish/prettier": "workspace:*",
+    "@corphish/tsconfig": "workspace:*",
+    "@types/node": "^24.9.0",
+    "typescript": "^5.9.3"
+  },
+  "prettier": "@corphish/prettier"
+}

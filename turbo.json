@@ -1,0 +1,31 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "envMode": "loose",
+  "globalDependencies": [".env", "example.env"],
+  "globalEnv": ["NODE_ENV", "NEXT_PUBLIC_APP_URL", "DATABASE_URL"],
+  "tasks": {
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": [".next/**", "!.next/cache/**", "dist/**"],
+      "inputs": ["$TURBO_DEFAULT$", ".env*"]
+    },
+    "lint": {
+      "dependsOn": ["^lint"]
+    },
+    "type-check": {
+      "dependsOn": ["^type-check"]
+    },
+    "generate": {
+      "cache": false,
+      "inputs": ["packages/db/prisma/**/*.prisma", "packages/db/package.json"],
+      "outputs": ["node_modules/@prisma/client/**", "node_modules/.prisma/client/**"]
+    },
+    "dev": {
+      "cache": false,
+      "persistent": true
+    },
+    "clean": {
+      "cache": false
+    }
+  }
+}

@@ -1,0 +1,25 @@
+# Dependencies
+node_modules/
+**/node_modules/
+
+# Env files
+.env
+.env.local
+**/.env
+**/.env.local
+!example.env
+
+# Turbo and build artifacts
+.turbo/
+.next/
+dist/
+build/
+out/
+coverage/
+**/generated/
+
+# Local tooling
+.pnpm-store/
+*.tsbuildinfo
+.DS_Store
+**/.mastra/

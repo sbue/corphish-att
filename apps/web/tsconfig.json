@@ -1,0 +1,21 @@
+{
+  "extends": "@corphish/tsconfig/nextjs.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"],
+      "@corphish/config": ["../../packages/config/src/index.ts"],
+      "@corphish/eslint": ["../../packages/eslint/base.js"],
+      "@corphish/prettier": ["../../packages/prettier/index.js"],
+      "@corphish/tsconfig": ["../../packages/tsconfig/base.json"],
+      "@corphish/db/*": ["../../packages/db/src/*"],
+      "@corphish/api/*": ["../../packages/api/src/*"],
+      "@corphish/ui/postcss.config": ["../../packages/ui/postcss.config.mjs"],
+      "@corphish/ui/globals.css": ["../../packages/ui/globals.css"],
+      "@corphish/ui/*": ["../../packages/ui/src/*"],
+      "@corphish/web/*": ["../../apps/web/src/*"]
+    }
+  },
+  "include": ["next-env.d.ts", "next.config.js", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "exclude": ["node_modules"]
+}

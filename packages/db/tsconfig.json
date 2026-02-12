@@ -1,0 +1,16 @@
+{
+  "extends": "@corphish/tsconfig/base.json",
+  "compilerOptions": {
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "rootDir": "./src",
+    "baseUrl": ".",
+    "noEmit": true,
+    "paths": {
+      "@corphish/db": ["./src/index.ts"],
+      "@corphish/db/*": ["./src/*"]
+    }
+  },
+  "include": ["src/**/*.ts"],
+  "exclude": ["node_modules"]
+}

@@ -1,0 +1,52 @@
+{
+  "name": "@corphish/api",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./app.module": "./src/app.module.ts",
+    "./context": "./src/context.ts",
+    "./trpc": "./src/trpc/index.ts",
+    "./trpc/context": "./src/trpc/context.ts",
+    "./trpc/router": "./src/trpc/router/index.ts",
+    "./trpc/server": "./src/trpc/server.ts"
+  },
+  "scripts": {
+    "clean": "rm -rf node_modules .turbo dist tsconfig.tsbuildinfo",
+    "type-check": "tsc -p tsconfig.json --noEmit",
+    "build": "tsc -b",
+    "dev": "tsc -b --watch",
+    "lint": "eslint . --max-warnings 0",
+    "format": "prettier --write \"src/**/*.{ts,js,json,md}\"",
+    "format:check": "prettier --check \"src/**/*.{ts,js,json,md}\"",
+    "mastra": "mastra dev --dir ./src/mastra/application"
+  },
+  "dependencies": {
+    "@corphish/config": "workspace:*",
+    "@mastra/core": "^1.3.0",
+    "@mastra/loggers": "^1.0.1",
+    "@mastra/pg": "^1.3.0",
+    "@nestjs/common": "^11.1.13",
+    "@nestjs/core": "^11.1.13",
+    "@nestjs/microservices": "^11.1.13",
+    "@nestjs/platform-express": "^11.1.13",
+    "@nestjs/websockets": "^11.1.13",
+    "@trpc/server": "^11.9.0",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.14.2",
+    "mastra": "^1.2.0",
+    "reflect-metadata": "^0.2.2",
+    "rxjs": "^7.8.2",
+    "superjson": "^2.2.6",
+    "zod": "^4.1.12"
+  },
+  "devDependencies": {
+    "@corphish/eslint": "workspace:*",
+    "@corphish/prettier": "workspace:*",
+    "@corphish/tsconfig": "workspace:*",
+    "@types/node": "^24.9.0",
+    "typescript": "^5.9.3"
+  },
+  "prettier": "@corphish/prettier"
+}
