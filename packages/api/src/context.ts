@@ -3,8 +3,6 @@ export interface StandardContextSessionUser {
   email?: string | null
   name?: string | null
   image?: string | null
-  organizationId?: string | null
-  organizationIds?: string[]
 }
 
 export interface StandardContextSession {
@@ -15,7 +13,6 @@ export interface StandardContextSession {
 export interface StandardContext {
   req?: Request
   session?: StandardContextSession | null
-  organizationId?: string | null
 }
 
 export const CONTEXT = 'CONTEXT'

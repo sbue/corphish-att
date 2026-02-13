@@ -9,14 +9,6 @@ export type TrpcContext = StandardContext & {
 export async function createTrpcContext(ctx: StandardContext = {}): Promise<TrpcContext> {
   const app = await createNestApp(ctx)
 
-  if (ctx.organizationId && ctx.session?.user) {
-    const organizationIds = ctx.session.user.organizationIds ?? []
-
-    if (organizationIds.includes(ctx.organizationId)) {
-      ctx.session.user.organizationId = ctx.organizationId
-    }
-  }
-
   return {
     ...ctx,
     app,
