@@ -18,13 +18,16 @@
     "clean": "rm -rf dist .turbo node_modules"
   },
   "dependencies": {
-    "@prisma/client": "^7.3.0"
+    "@prisma/adapter-pg": "^7.4.0",
+    "@prisma/client": "^7.3.0",
+    "pg": "^8.18.0"
   },
   "devDependencies": {
     "@corphish/eslint": "workspace:*",
     "@corphish/prettier": "workspace:*",
     "@corphish/tsconfig": "workspace:*",
     "@types/node": "^24.9.0",
+    "@types/pg": "^8.15.6",
     "prisma": "^7.3.0",
     "typescript": "^5.9.3"
   },

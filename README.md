@@ -23,6 +23,11 @@ Documented in `example.env`:
 - `NODE_ENV=production`
 - `DATABASE_URL=<your postgres connection string>`
 - `NEXT_PUBLIC_APP_URL=https://<your-public-domain>`
+- `AUTH_SECRET=<openssl rand -base64 32>`
+- `AUTH_URL=https://<your-public-domain>`
+- `AUTH_TRUST_HOST=true`
+- `AUTH_GITHUB_ID=<provider-client-id>`
+- `AUTH_GITHUB_SECRET=<provider-client-secret>`
 
 Railway sets `PORT` automatically at runtime.
 

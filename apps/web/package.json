@@ -13,11 +13,14 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
+    "@auth/prisma-adapter": "^2.11.1",
     "@corphish/api": "workspace:*",
     "@corphish/config": "workspace:*",
+    "@corphish/db": "workspace:*",
     "@corphish/ui": "workspace:*",
     "@trpc/server": "^11.9.0",
     "next": "16.1.6",
+    "next-auth": "^5.0.0-beta.29",
     "react": "^19.2.4",
     "react-dom": "^19.2.4"
   },

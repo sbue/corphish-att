@@ -2,4 +2,4 @@
 
 - Prisma schema lives in `packages/db/prisma/schema.prisma`.
 - Keep models generic and boilerplate-friendly.
-- Use Supabase Postgres via `DATABASE_URL` from environment.
+- Use Railway Postgres (or any Postgres provider) via `DATABASE_URL` from environment.
