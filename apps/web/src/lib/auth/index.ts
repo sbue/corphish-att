@@ -1,14 +1,9 @@
 import { PrismaAdapter } from '@auth/prisma-adapter'
-import {
-  AUTH_GITHUB_ID,
-  AUTH_GITHUB_SECRET,
-  AUTH_SECRET,
-  AUTH_TRUST_HOST,
-} from '@corphish/config'
-import { prisma } from '@corphish/db/client'
 import NextAuth, { type NextAuthConfig, type NextAuthResult } from 'next-auth'
 import type { Adapter } from 'next-auth/adapters'
-import GitHub from 'next-auth/providers/github'
+import Resend from 'next-auth/providers/resend'
+import { prisma } from '@corphish/db/client'
+import { AUTH_RESEND_FROM, AUTH_RESEND_KEY, AUTH_SECRET, AUTH_TRUST_HOST } from '@corphish/config'
 
 const config: NextAuthConfig = {
   adapter: PrismaAdapter(prisma) as Adapter,
@@ -18,9 +13,9 @@ const config: NextAuthConfig = {
   trustHost: AUTH_TRUST_HOST,
   secret: AUTH_SECRET || undefined,
   providers: [
-    GitHub({
-      clientId: AUTH_GITHUB_ID || 'github-client-id',
-      clientSecret: AUTH_GITHUB_SECRET || 'github-client-secret',
+    Resend({
+      apiKey: AUTH_RESEND_KEY || undefined,
+      from: AUTH_RESEND_FROM || 'onboarding@resend.dev',
     }),
   ],
 }

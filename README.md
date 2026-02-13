@@ -26,8 +26,8 @@ Documented in `example.env`:
 - `AUTH_SECRET=<openssl rand -base64 32>`
 - `AUTH_URL=https://<your-public-domain>`
 - `AUTH_TRUST_HOST=true`
-- `AUTH_GITHUB_ID=<provider-client-id>`
-- `AUTH_GITHUB_SECRET=<provider-client-secret>`
+- `AUTH_RESEND_KEY=<your-resend-api-key>`
+- `AUTH_RESEND_FROM=<verified-sender@your-domain>`
 
 Railway sets `PORT` automatically at runtime.
 
