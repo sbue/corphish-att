@@ -4,7 +4,12 @@
   "scripts": {
     "with-env": "dotenv -e .env --",
     "web": "pnpm with-env turbo run dev --filter=@corphish/web...",
+    "playground": "turbo run dev --filter=@corphish/playground...",
     "mastra": "pnpm --filter @corphish/api run mastra",
+    "bot:new": "bash scripts/bot/new.sh",
+    "bot:start": "bash scripts/bot/start.sh",
+    "bot:land": "bash scripts/bot/land.sh",
+    "bot:cleanup": "bash scripts/bot/cleanup.sh",
     "build": "turbo run build",
     "lint": "turbo run lint",
     "lint:fix": "turbo run lint -- --fix",
