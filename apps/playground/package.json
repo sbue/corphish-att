@@ -1,0 +1,26 @@
+{
+  "name": "@corphish/playground",
+  "private": true,
+  "scripts": {
+    "clean": "rm -rf .turbo node_modules dist",
+    "dev": "tsx --tsconfig tsconfig.json --require tsconfig-paths/register src/index.ts",
+    "lint": "eslint . --max-warnings 0",
+    "format": "prettier --write \"src/**/*.{ts,js,json,md}\"",
+    "format:check": "prettier --check \"src/**/*.{ts,js,json,md}\"",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@corphish/api": "workspace:*",
+    "@corphish/config": "workspace:*"
+  },
+  "devDependencies": {
+    "@corphish/eslint": "workspace:*",
+    "@corphish/prettier": "workspace:*",
+    "@corphish/tsconfig": "workspace:*",
+    "@types/node": "^24.9.0",
+    "tsconfig-paths": "^4.2.0",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3"
+  },
+  "prettier": "@corphish/prettier"
+}

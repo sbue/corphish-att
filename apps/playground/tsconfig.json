@@ -1,0 +1,19 @@
+{
+  "extends": "@corphish/tsconfig/base.json",
+  "compilerOptions": {
+    "outDir": "./dist",
+    "baseUrl": ".",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "paths": {
+      "@corphish/config": ["../../packages/config/src/index.ts"],
+      "@corphish/api/*": ["../../packages/api/src/*"],
+      "@corphish/playground/*": ["../../apps/playground/src/*"]
+    },
+    "types": ["node"]
+  },
+  "include": ["src/**/*.ts"],
+  "exclude": ["node_modules", "dist"]
+}
