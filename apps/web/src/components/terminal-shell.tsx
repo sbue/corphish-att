@@ -25,6 +25,8 @@ const BUENAHORA_ASCII = [
 ]
 
 const PROMPT = '\x1b[38;2;138;255;201mvisitor@buenahora\x1b[0m:\x1b[38;2;127;171;255m~\x1b[0m$ '
+const EMAIL_PROMPT = '\x1b[38;2;255;229;146memail>\x1b[0m '
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
 const ABOUT_PLACEHOLDER = [
   '',
@@ -38,6 +40,15 @@ const ABOUT_PLACEHOLDER = [
   '  - contact links',
   '',
 ]
+
+type LoginResponse =
+  | {
+      ok: true
+    }
+  | {
+      ok: false
+      error: string
+    }
 
 export function TerminalShell({ initialCommand }: TerminalShellProps) {
   const containerRef = useRef<HTMLDivElement>(null)
@@ -90,6 +101,47 @@ export function TerminalShell({ initialCommand }: TerminalShellProps) {
       terminal.write(`${value}\r\n`)
     }
 
+    const requestMagicLink = async (email: string): Promise<LoginResponse> => {
+      try {
+        const response = await fetch('/api/auth/magic-link', {
+          method: 'POST',
+          headers: {
+            'content-type': 'application/json',
+          },
+          cache: 'no-store',
+          body: JSON.stringify({ email }),
+        })
+
+        let error = 'Unable to send magic link right now.'
+        const json = (await response.json().catch(() => null)) as { error?: unknown } | null
+
+        if (typeof json?.error === 'string' && json.error.trim().length > 0) {
+          error = json.error
+        }
+
+        if (!response.ok) {
+          return {
+            ok: false,
+            error,
+          }
+        }
+
+        return { ok: true }
+      } catch {
+        return {
+          ok: false,
+          error: 'Network error while contacting auth endpoint.',
+        }
+      }
+    }
+
+    let inputMode: 'command' | 'login-email' = 'command'
+    let isSendingMagicLink = false
+
+    const writePrompt = () => {
+      terminal.write(inputMode === 'login-email' ? EMAIL_PROMPT : PROMPT)
+    }
+
     const writeBanner = () => {
       const santigoColors = [
         '38;2;162;255;119',
@@ -116,16 +168,59 @@ export function TerminalShell({ initialCommand }: TerminalShellProps) {
       }
       writeLine('\x1b[38;2;88;118;173m+---------------------------------------------------------------------+\x1b[0m')
       writeLine('')
-      writeLine('\x1b[38;2;165;210;255mType \x1b[1m/about\x1b[0m\x1b[38;2;165;210;255m and press Enter.\x1b[0m')
-      writeLine('\x1b[38;2;123;149;187mOnly /about is implemented for now.\x1b[0m')
+      writeLine('\x1b[38;2;165;210;255mType \x1b[1m/about\x1b[0m\x1b[38;2;165;210;255m or \x1b[1m/login\x1b[0m\x1b[38;2;165;210;255m and press Enter.\x1b[0m')
+      writeLine('\x1b[38;2;123;149;187mUse /login for passwordless sign-in via email magic link.\x1b[0m')
       writeLine('')
     }
 
+    const handleLoginEmailInput = async (input: string) => {
+      const email = input.trim().toLowerCase()
+
+      if (!email) {
+        writeLine('\x1b[38;2;255;162;162mEmail is required.\x1b[0m')
+        writePrompt()
+        return
+      }
+
+      if (!EMAIL_PATTERN.test(email)) {
+        writeLine('\x1b[38;2;255;162;162mInvalid email format.\x1b[0m')
+        writePrompt()
+        return
+      }
+
+      isSendingMagicLink = true
+      writeLine('\x1b[38;2;157;241;199mSending magic link...\x1b[0m')
+
+      const result = await requestMagicLink(email)
+      isSendingMagicLink = false
+
+      if (result.ok) {
+        writeLine(`\x1b[38;2;175;255;179mMagic link sent to ${email}\x1b[0m`)
+        writeLine('\x1b[38;2;160;205;255mOpen the email and click the link to finish sign-in.\x1b[0m')
+      } else {
+        writeLine(`\x1b[38;2;255;162;162m${result.error}\x1b[0m`)
+      }
+
+      writeLine('')
+      inputMode = 'command'
+      writePrompt()
+    }
+
+    const startLoginFlow = () => {
+      inputMode = 'login-email'
+      writeLine('')
+      writeLine('\x1b[1;38;2;255;236;167m/login\x1b[0m')
+      writeLine('Enter your email for a passwordless magic link:')
+      writePrompt()
+    }
+
     const executeCommand = (input: string) => {
-      const command = input.trim().toLowerCase()
+      const trimmedInput = input.trim()
+      const [rawCommand] = trimmedInput.split(/\s+/, 1)
+      const command = rawCommand?.toLowerCase() ?? ''
 
       if (!command) {
-        terminal.write(PROMPT)
+        writePrompt()
         return
       }
 
@@ -133,20 +228,50 @@ export function TerminalShell({ initialCommand }: TerminalShellProps) {
         for (const line of ABOUT_PLACEHOLDER) {
           writeLine(line)
         }
-        terminal.write(PROMPT)
+        writePrompt()
+        return
+      }
+
+      if (command === '/login' || command === 'login') {
+        startLoginFlow()
+        return
+      }
+
+      if (command === '/help' || command === 'help') {
+        writeLine('')
+        writeLine('\x1b[1;38;2;154;243;255mAvailable commands\x1b[0m')
+        writeLine('  /about')
+        writeLine('  /login')
+        writeLine('')
+        writePrompt()
         return
       }
 
       writeLine(`\x1b[38;2;255;144;144mcommand not found:\x1b[0m ${command}`)
-      writeLine('\x1b[38;2;164;214;255mTry /about\x1b[0m')
+      writeLine('\x1b[38;2;164;214;255mTry /about or /login\x1b[0m')
       writeLine('')
-      terminal.write(PROMPT)
+      writePrompt()
+    }
+
+    const handleSubmittedInput = async (input: string) => {
+      if (isSendingMagicLink) {
+        writeLine('\x1b[38;2;255;229;146mPlease wait for the current request to finish.\x1b[0m')
+        writePrompt()
+        return
+      }
+
+      if (inputMode === 'login-email') {
+        await handleLoginEmailInput(input)
+        return
+      }
+
+      executeCommand(input)
     }
 
     writeBanner()
 
     let buffer = ''
-    terminal.write(PROMPT)
+    writePrompt()
 
     const bootCommand = initialCommand?.trim()
     if (bootCommand) {
@@ -165,7 +290,7 @@ export function TerminalShell({ initialCommand }: TerminalShellProps) {
           terminal.write('\r\n')
           const command = buffer
           buffer = ''
-          executeCommand(command)
+          void handleSubmittedInput(command)
           continue
         }
 
@@ -180,7 +305,8 @@ export function TerminalShell({ initialCommand }: TerminalShellProps) {
         if (char === '\u0003') {
           terminal.write('^C\r\n')
           buffer = ''
-          terminal.write(PROMPT)
+          inputMode = 'command'
+          writePrompt()
           continue
         }
 
