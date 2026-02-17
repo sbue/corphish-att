@@ -1,9 +1,10 @@
 import type { Metadata } from 'next'
 import '@corphish/ui/globals.css'
+import '@xterm/xterm/css/xterm.css'
 
 export const metadata: Metadata = {
-  title: 'Corphish App Template',
-  description: 'Turbo + Next.js + Nest + tRPC + Prisma boilerplate',
+  title: 'SANTIAGO | BUENAHORA Terminal',
+  description: 'Interactive terminal-style homepage for Buenahora',
 }
 
 export default function RootLayout({
