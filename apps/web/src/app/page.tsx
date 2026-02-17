@@ -1,5 +1,8 @@
 import { TerminalShell } from '@/components/terminal-shell'
 
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 export default function HomePage() {
   return (
     <main className='relative min-h-screen overflow-hidden bg-[#02050a] px-4 py-8 text-[#dcf2ff] sm:px-8 sm:py-12'>
