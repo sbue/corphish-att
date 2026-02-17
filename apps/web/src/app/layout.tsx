@@ -2,8 +2,8 @@ import type { Metadata } from 'next'
 import '@corphish/ui/globals.css'
 
 export const metadata: Metadata = {
-  title: 'Corphish App Template',
-  description: 'Turbo + Next.js + Nest + tRPC + Prisma boilerplate',
+  title: 'SANTIAGO | BUENAHORA',
+  description: 'ASCII art login experience for Buenahora',
 }
 
 export default function RootLayout({
