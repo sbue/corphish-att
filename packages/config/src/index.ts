@@ -10,3 +10,4 @@ export const AUTH_SECRET = process.env.AUTH_SECRET ?? ''
 export const AUTH_RESEND_KEY = process.env.AUTH_RESEND_KEY ?? ''
 export const AUTH_RESEND_FROM = process.env.AUTH_RESEND_FROM ?? 'onboarding@resend.dev'
 export const AUTH_TRUST_HOST = (process.env.AUTH_TRUST_HOST ?? 'false').toLowerCase() === 'true'
+export const AUTH_ALLOWED_EMAIL = (process.env.AUTH_ALLOWED_EMAIL ?? '').trim().toLowerCase()
