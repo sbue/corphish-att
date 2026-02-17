@@ -8,6 +8,9 @@ node_modules/
 **/.env
 **/.env.local
 !example.env
+.infisical.json
+**/.infisical.json
+.beads/redirect
 
 # Turbo and build artifacts
 .turbo/
