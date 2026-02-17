@@ -197,6 +197,7 @@ export function TerminalShell({ initialCommand }: TerminalShellProps) {
       if (result.ok) {
         writeLine(`\x1b[38;2;175;255;179mMagic link sent to ${email}\x1b[0m`)
         writeLine('\x1b[38;2;160;205;255mOpen the email and click the link to finish sign-in.\x1b[0m')
+        writeLine('\x1b[38;2;160;205;255mAfter sign-in, you will land on /logged-in.\x1b[0m')
       } else {
         writeLine(`\x1b[38;2;255;162;162m${result.error}\x1b[0m`)
       }

@@ -40,7 +40,7 @@ export async function POST(request: Request) {
     await signIn('resend', {
       email,
       redirect: false,
-      redirectTo: '/',
+      redirectTo: '/logged-in',
     })
 
     return NextResponse.json({ ok: true })
