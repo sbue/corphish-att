@@ -35,6 +35,30 @@
     },
     "clean": {
       "cache": false
+    },
+    "android:apk": {
+      "outputs": ["app/build/outputs/apk/**"]
+    },
+    "android:bundle": {
+      "outputs": ["app/build/outputs/bundle/**"]
+    },
+    "android:lint": {
+      "outputs": ["app/build/reports/**"]
+    },
+    "android:test": {
+      "outputs": ["app/build/test-results/**", "app/build/reports/**"]
+    },
+    "android:deploy": {
+      "cache": false
+    },
+    "android:clean": {
+      "cache": false
+    },
+    "android:devices": {
+      "cache": false
+    },
+    "android:uninstall": {
+      "cache": false
     }
   }
 }
