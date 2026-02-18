@@ -170,7 +170,7 @@ export function TerminalShell({ initialCommand }: TerminalShellProps) {
 
     const requestAbout = async (): Promise<AboutResponse> => {
       try {
-        const profile = await trpcClient.greeting.about.query()
+        const profile = await trpcClient.terminal.about.query()
 
         return {
           ok: true,
@@ -191,7 +191,7 @@ export function TerminalShell({ initialCommand }: TerminalShellProps) {
 
     const requestContact = async (name: string, email: string, message: string): Promise<ContactResponse> => {
       try {
-        await trpcClient.greeting.submitContact.mutate({
+        await trpcClient.terminal.contact.mutate({
           name,
           email,
           message,
