@@ -10,6 +10,7 @@
   "scripts": {
     "generate": "prisma generate --config prisma.config.ts",
     "migrate": "prisma migrate dev --config prisma.config.ts",
+    "migrate:db": "prisma migrate deploy --config prisma.config.ts",
     "studio": "prisma studio --config prisma.config.ts",
     "lint": "eslint . --max-warnings 0",
     "format": "prettier --write \"src/**/*.{ts,js,json,md}\"",

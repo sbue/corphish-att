@@ -36,7 +36,7 @@ Railway sets `PORT` automatically at runtime.
 `railway.json` config:
 
 - Build: `corepack enable && pnpm install --frozen-lockfile && pnpm --filter @corphish/web build`
-- Start: `node apps/web/.next/standalone/apps/web/server.js`
+- Start: runs `pnpm --filter @corphish/db run migrate:db` first, then starts `node apps/web/.next/standalone/apps/web/server.js`
 - Healthcheck: `/`
 
 ### 4. Validate deployment

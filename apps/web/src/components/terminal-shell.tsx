@@ -26,20 +26,21 @@ const BUENAHORA_ASCII = [
 
 const PROMPT = '\x1b[38;2;138;255;201mvisitor@buenahora\x1b[0m:\x1b[38;2;127;171;255m~\x1b[0m$ '
 const EMAIL_PROMPT = '\x1b[38;2;255;229;146memail>\x1b[0m '
+const NAME_PROMPT = '\x1b[38;2;255;229;146mname>\x1b[0m '
+const CONTACT_EMAIL_PROMPT = '\x1b[38;2;255;229;146mcontact-email>\x1b[0m '
+const MESSAGE_PROMPT = '\x1b[38;2;255;229;146mmessage>\x1b[0m '
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
-const ABOUT_PLACEHOLDER = [
-  '',
-  '\x1b[1;38;2;154;243;255m/about\x1b[0m',
-  'Santiago placeholder bio.',
-  'This output will move to a server-side tRPC command later.',
-  '',
-  'Suggested fields:',
-  '  - current focus',
-  '  - key projects',
-  '  - contact links',
-  '',
-]
+const terminalLink = (label: string, url: string) => `\x1b]8;;${url}\u0007${label}\x1b]8;;\u0007`
+
+type AboutProfile = {
+  bio: string
+  links: {
+    primero: string
+    linkedin: string
+    twitter: string
+  }
+}
 
 type LoginResponse =
   | {
@@ -49,6 +50,24 @@ type LoginResponse =
       ok: false
       error: string
     }
+
+type ContactResponse =
+  | {
+      ok: true
+    }
+  | {
+      ok: false
+      error: string
+    }
+
+type AboutResponse =
+  | ({ ok: true } & AboutProfile)
+  | {
+      ok: false
+      error: string
+    }
+
+type InputMode = 'command' | 'login-email' | 'contact-name' | 'contact-email' | 'contact-message'
 
 export function TerminalShell({ initialCommand }: TerminalShellProps) {
   const containerRef = useRef<HTMLDivElement>(null)
@@ -135,11 +154,125 @@ export function TerminalShell({ initialCommand }: TerminalShellProps) {
       }
     }
 
-    let inputMode: 'command' | 'login-email' = 'command'
-    let isSendingMagicLink = false
+    const requestAbout = async (): Promise<AboutResponse> => {
+      try {
+        const response = await fetch('/api/terminal/about', {
+          method: 'GET',
+          cache: 'no-store',
+        })
+
+        let error = 'Could not load profile right now.'
+        const json = (await response.json().catch(() => null)) as
+          | ({ error?: unknown } & Partial<AboutProfile>)
+          | null
+
+        if (!response.ok) {
+          if (typeof json?.error === 'string' && json.error.trim().length > 0) {
+            error = json.error
+          }
+
+          return {
+            ok: false,
+            error,
+          }
+        }
+
+        if (
+          typeof json?.bio !== 'string' ||
+          typeof json.links?.primero !== 'string' ||
+          typeof json.links?.linkedin !== 'string' ||
+          typeof json.links?.twitter !== 'string'
+        ) {
+          return {
+            ok: false,
+            error: 'Profile response was invalid.',
+          }
+        }
+
+        return {
+          ok: true,
+          bio: json.bio,
+          links: {
+            primero: json.links.primero,
+            linkedin: json.links.linkedin,
+            twitter: json.links.twitter,
+          },
+        }
+      } catch {
+        return {
+          ok: false,
+          error: 'Network error while loading profile.',
+        }
+      }
+    }
+
+    const requestContact = async (name: string, email: string, message: string): Promise<ContactResponse> => {
+      try {
+        const response = await fetch('/api/contact', {
+          method: 'POST',
+          headers: {
+            'content-type': 'application/json',
+          },
+          cache: 'no-store',
+          body: JSON.stringify({ name, email, message }),
+        })
+
+        let error = 'Could not submit contact request right now.'
+        const json = (await response.json().catch(() => null)) as { error?: unknown } | null
+
+        if (typeof json?.error === 'string' && json.error.trim().length > 0) {
+          error = json.error
+        }
+
+        if (!response.ok) {
+          return {
+            ok: false,
+            error,
+          }
+        }
+
+        return { ok: true }
+      } catch {
+        return {
+          ok: false,
+          error: 'Network error while sending contact request.',
+        }
+      }
+    }
+
+    const renderAbout = (profile: AboutProfile) => {
+      writeLine('')
+      writeLine('\x1b[1;38;2;154;243;255m/about\x1b[0m')
+      writeLine(profile.bio)
+      writeLine('')
+      writeLine(
+        `Links: ${terminalLink('Primero AI', profile.links.primero)} | ${terminalLink('LinkedIn', profile.links.linkedin)} | ${terminalLink('Twitter', profile.links.twitter)}`,
+      )
+      writeLine('')
+    }
+
+    let inputMode: InputMode = 'command'
+    let isRequestInFlight = false
+    let contactName = ''
+    let contactEmail = ''
 
     const writePrompt = () => {
-      terminal.write(inputMode === 'login-email' ? EMAIL_PROMPT : PROMPT)
+      switch (inputMode) {
+        case 'login-email':
+          terminal.write(EMAIL_PROMPT)
+          return
+        case 'contact-name':
+          terminal.write(NAME_PROMPT)
+          return
+        case 'contact-email':
+          terminal.write(CONTACT_EMAIL_PROMPT)
+          return
+        case 'contact-message':
+          terminal.write(MESSAGE_PROMPT)
+          return
+        default:
+          terminal.write(PROMPT)
+      }
     }
 
     const writeBanner = () => {
@@ -168,8 +301,10 @@ export function TerminalShell({ initialCommand }: TerminalShellProps) {
       }
       writeLine('\x1b[38;2;88;118;173m+---------------------------------------------------------------------+\x1b[0m')
       writeLine('')
-      writeLine('\x1b[38;2;165;210;255mType \x1b[1m/about\x1b[0m\x1b[38;2;165;210;255m or \x1b[1m/login\x1b[0m\x1b[38;2;165;210;255m and press Enter.\x1b[0m')
-      writeLine('\x1b[38;2;123;149;187mUse /login for passwordless sign-in via email magic link.\x1b[0m')
+      writeLine(
+        '\x1b[38;2;165;210;255mType \x1b[1m/about\x1b[0m\x1b[38;2;165;210;255m or \x1b[1m/contact\x1b[0m\x1b[38;2;165;210;255m and press Enter.\x1b[0m',
+      )
+      writeLine('\x1b[38;2;123;149;187mUse /contact to send a message.\x1b[0m')
       writeLine('')
     }
 
@@ -188,11 +323,11 @@ export function TerminalShell({ initialCommand }: TerminalShellProps) {
         return
       }
 
-      isSendingMagicLink = true
+      isRequestInFlight = true
       writeLine('\x1b[38;2;157;241;199mSending magic link...\x1b[0m')
 
       const result = await requestMagicLink(email)
-      isSendingMagicLink = false
+      isRequestInFlight = false
 
       if (result.ok) {
         writeLine(`\x1b[38;2;175;255;179mMagic link sent to ${email}\x1b[0m`)
@@ -207,11 +342,98 @@ export function TerminalShell({ initialCommand }: TerminalShellProps) {
       writePrompt()
     }
 
+    const handleAboutCommand = async () => {
+      isRequestInFlight = true
+      writeLine('\x1b[38;2;157;241;199mLoading profile...\x1b[0m')
+
+      const result = await requestAbout()
+      isRequestInFlight = false
+
+      if (result.ok) {
+        renderAbout(result)
+      } else {
+        writeLine(`\x1b[38;2;255;162;162m${result.error}\x1b[0m`)
+        writeLine('')
+      }
+
+      writePrompt()
+    }
+
     const startLoginFlow = () => {
       inputMode = 'login-email'
       writeLine('')
       writeLine('\x1b[1;38;2;255;236;167m/login\x1b[0m')
       writeLine('Enter your email for a passwordless magic link:')
+      writePrompt()
+    }
+
+    const resetContactFlow = () => {
+      contactName = ''
+      contactEmail = ''
+      inputMode = 'command'
+    }
+
+    const startContactFlow = () => {
+      contactName = ''
+      contactEmail = ''
+      inputMode = 'contact-name'
+      writeLine('')
+      writeLine('\x1b[1;38;2;255;236;167m/contact\x1b[0m')
+      writeLine('Drop a quick note and Santiago will reach out.')
+      writePrompt()
+    }
+
+    const handleContactNameInput = (input: string) => {
+      const name = input.trim()
+
+      if (!name) {
+        writeLine('\x1b[38;2;255;162;162mName is required.\x1b[0m')
+        writePrompt()
+        return
+      }
+
+      contactName = name
+      inputMode = 'contact-email'
+      writePrompt()
+    }
+
+    const handleContactEmailInput = (input: string) => {
+      const email = input.trim().toLowerCase()
+
+      if (!EMAIL_PATTERN.test(email)) {
+        writeLine('\x1b[38;2;255;162;162mPlease provide a valid email.\x1b[0m')
+        writePrompt()
+        return
+      }
+
+      contactEmail = email
+      inputMode = 'contact-message'
+      writePrompt()
+    }
+
+    const handleContactMessageInput = async (input: string) => {
+      const message = input.trim()
+
+      if (message.length < 8) {
+        writeLine('\x1b[38;2;255;162;162mMessage is too short. Add a bit more detail.\x1b[0m')
+        writePrompt()
+        return
+      }
+
+      isRequestInFlight = true
+      writeLine('\x1b[38;2;157;241;199mSending message...\x1b[0m')
+
+      const result = await requestContact(contactName, contactEmail, message)
+      isRequestInFlight = false
+
+      if (result.ok) {
+        writeLine('\x1b[38;2;175;255;179mMessage sent. Santiago will follow up.\x1b[0m')
+      } else {
+        writeLine(`\x1b[38;2;255;162;162m${result.error}\x1b[0m`)
+      }
+
+      writeLine('')
+      resetContactFlow()
       writePrompt()
     }
 
@@ -226,10 +448,7 @@ export function TerminalShell({ initialCommand }: TerminalShellProps) {
       }
 
       if (command === '/about' || command === 'about') {
-        for (const line of ABOUT_PLACEHOLDER) {
-          writeLine(line)
-        }
-        writePrompt()
+        void handleAboutCommand()
         return
       }
 
@@ -238,35 +457,40 @@ export function TerminalShell({ initialCommand }: TerminalShellProps) {
         return
       }
 
-      if (command === '/help' || command === 'help') {
-        writeLine('')
-        writeLine('\x1b[1;38;2;154;243;255mAvailable commands\x1b[0m')
-        writeLine('  /about')
-        writeLine('  /login')
-        writeLine('')
-        writePrompt()
+      if (command === '/contact' || command === 'contact') {
+        startContactFlow()
         return
       }
 
       writeLine(`\x1b[38;2;255;144;144mcommand not found:\x1b[0m ${command}`)
-      writeLine('\x1b[38;2;164;214;255mTry /about or /login\x1b[0m')
+      writeLine('\x1b[38;2;164;214;255mTry /about or /contact\x1b[0m')
       writeLine('')
       writePrompt()
     }
 
     const handleSubmittedInput = async (input: string) => {
-      if (isSendingMagicLink) {
+      if (isRequestInFlight) {
         writeLine('\x1b[38;2;255;229;146mPlease wait for the current request to finish.\x1b[0m')
         writePrompt()
         return
       }
 
-      if (inputMode === 'login-email') {
-        await handleLoginEmailInput(input)
-        return
+      switch (inputMode) {
+        case 'login-email':
+          await handleLoginEmailInput(input)
+          return
+        case 'contact-name':
+          handleContactNameInput(input)
+          return
+        case 'contact-email':
+          handleContactEmailInput(input)
+          return
+        case 'contact-message':
+          await handleContactMessageInput(input)
+          return
+        default:
+          executeCommand(input)
       }
-
-      executeCommand(input)
     }
 
     writeBanner()
@@ -306,7 +530,7 @@ export function TerminalShell({ initialCommand }: TerminalShellProps) {
         if (char === '\u0003') {
           terminal.write('^C\r\n')
           buffer = ''
-          inputMode = 'command'
+          resetContactFlow()
           writePrompt()
           continue
         }
@@ -335,7 +559,7 @@ export function TerminalShell({ initialCommand }: TerminalShellProps) {
             <span className='h-2.5 w-2.5 rounded-full bg-[#ffd975]' />
             <span className='h-2.5 w-2.5 rounded-full bg-[#84f8a2]' />
           </div>
-          <p className='text-[11px] tracking-[0.26em] text-[#8fd5ff] sm:text-xs'>BUENAHORA TERMINAL</p>
+          <p className='text-[11px] tracking-[0.26em] text-[#8fd5ff] sm:text-xs'>SANTIAGO BUENAHORA</p>
         </header>
         <div className='h-[72vh] min-h-[480px] w-full bg-[radial-gradient(circle_at_8%_0%,rgba(127,255,192,0.08),transparent_35%),radial-gradient(circle_at_100%_100%,rgba(104,157,255,0.08),transparent_38%),#05080f] p-2 sm:p-4'>
           <div ref={containerRef} className='h-full w-full' />

@@ -2,6 +2,18 @@
 
 set -euo pipefail
 
+if command -v pnpm >/dev/null 2>&1; then
+  PNPM_CMD=(pnpm)
+elif command -v corepack >/dev/null 2>&1; then
+  corepack enable
+  PNPM_CMD=(pnpm)
+else
+  PNPM_CMD=(npx -y pnpm@10.20.0)
+fi
+
+# Railway deploys this script for production runtime; default to prod Infisical env unless overridden.
+export INFISICAL_ENV="${INFISICAL_ENV:-prod}"
+
 SOURCE_STATIC_DIR='apps/web/.next/static'
 TARGET_STATIC_DIR='apps/web/.next/standalone/apps/web/.next/static'
 
@@ -13,4 +25,5 @@ if [[ -d "$SOURCE_STATIC_DIR" ]]; then
   cp -R "$SOURCE_STATIC_DIR"/. "$TARGET_STATIC_DIR"/
 fi
 
+bash ./scripts/with-infisical.sh "${PNPM_CMD[@]}" --filter @corphish/db run migrate:db
 bash ./scripts/with-infisical.sh node apps/web/.next/standalone/apps/web/server.js

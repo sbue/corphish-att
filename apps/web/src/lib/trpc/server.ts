@@ -25,3 +25,19 @@ export async function requestPasswordlessLogin(emailInput: string) {
 
   return { email }
 }
+
+export async function getTerminalAbout() {
+  const session = await auth()
+  const trpcContext = await createTrpcContext({ session })
+  const caller = appRouter.createCaller(trpcContext)
+
+  return await caller.terminal.about()
+}
+
+export async function submitTerminalContact(input: { name: string; email: string; message: string }) {
+  const session = await auth()
+  const trpcContext = await createTrpcContext({ session })
+  const caller = appRouter.createCaller(trpcContext)
+
+  return await caller.terminal.submitContact(input)
+}
