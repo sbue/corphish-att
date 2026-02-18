@@ -64,6 +64,8 @@ importers:
         specifier: ^5.9.3
         version: 5.9.3
 
+  apps/wear-os-app: {}
+
   apps/web:
     dependencies:
       '@auth/prisma-adapter':
