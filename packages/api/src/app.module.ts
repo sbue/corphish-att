@@ -6,6 +6,7 @@ import { CONTEXT } from './context'
 import type { StandardContext } from './context'
 import { GreetingModule } from './greeting/greeting.module'
 import { MastraModule } from './mastra/mastra.module'
+import { DatabaseModule } from './platform/database/database.module'
 
 @Global()
 @Module({})
@@ -16,9 +17,9 @@ let appContext: INestApplicationContext | undefined
 export function createModule(context: StandardContext): DynamicModule {
   return {
     module: AppModule,
-    imports: [GreetingModule, MastraModule],
+    imports: [GreetingModule, MastraModule, DatabaseModule],
     providers: [{ provide: CONTEXT, useValue: context }],
-    exports: [CONTEXT, GreetingModule, MastraModule],
+    exports: [CONTEXT, GreetingModule, MastraModule, DatabaseModule],
   }
 }
 
