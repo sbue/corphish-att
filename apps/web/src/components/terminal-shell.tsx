@@ -1,8 +1,10 @@
 'use client'
 
 import { useEffect, useRef } from 'react'
+import { TRPCClientError } from '@trpc/client'
 import { FitAddon } from '@xterm/addon-fit'
 import { Terminal } from '@xterm/xterm'
+import { trpcClient } from '@/lib/trpc/client'
 
 type TerminalShellProps = {
   initialCommand?: string
@@ -120,6 +122,18 @@ export function TerminalShell({ initialCommand }: TerminalShellProps) {
       terminal.write(`${value}\r\n`)
     }
 
+    const getTrpcErrorMessage = (error: unknown, fallbackMessage: string) => {
+      if (error instanceof TRPCClientError) {
+        return error.message
+      }
+
+      if (error instanceof Error && error.message.trim().length > 0) {
+        return error.message
+      }
+
+      return fallbackMessage
+    }
+
     const requestMagicLink = async (email: string): Promise<LoginResponse> => {
       try {
         const response = await fetch('/api/auth/magic-link', {
@@ -156,86 +170,38 @@ export function TerminalShell({ initialCommand }: TerminalShellProps) {
 
     const requestAbout = async (): Promise<AboutResponse> => {
       try {
-        const response = await fetch('/api/terminal/about', {
-          method: 'GET',
-          cache: 'no-store',
-        })
-
-        let error = 'Could not load profile right now.'
-        const json = (await response.json().catch(() => null)) as
-          | ({ error?: unknown } & Partial<AboutProfile>)
-          | null
-
-        if (!response.ok) {
-          if (typeof json?.error === 'string' && json.error.trim().length > 0) {
-            error = json.error
-          }
-
-          return {
-            ok: false,
-            error,
-          }
-        }
-
-        if (
-          typeof json?.bio !== 'string' ||
-          typeof json.links?.primero !== 'string' ||
-          typeof json.links?.linkedin !== 'string' ||
-          typeof json.links?.twitter !== 'string'
-        ) {
-          return {
-            ok: false,
-            error: 'Profile response was invalid.',
-          }
-        }
+        const profile = await trpcClient.greeting.about.query()
 
         return {
           ok: true,
-          bio: json.bio,
+          bio: profile.bio,
           links: {
-            primero: json.links.primero,
-            linkedin: json.links.linkedin,
-            twitter: json.links.twitter,
+            primero: profile.links.primero,
+            linkedin: profile.links.linkedin,
+            twitter: profile.links.twitter,
           },
         }
-      } catch {
+      } catch (error) {
         return {
           ok: false,
-          error: 'Network error while loading profile.',
+          error: getTrpcErrorMessage(error, 'Could not load profile right now.'),
         }
       }
     }
 
     const requestContact = async (name: string, email: string, message: string): Promise<ContactResponse> => {
       try {
-        const response = await fetch('/api/contact', {
-          method: 'POST',
-          headers: {
-            'content-type': 'application/json',
-          },
-          cache: 'no-store',
-          body: JSON.stringify({ name, email, message }),
+        await trpcClient.greeting.submitContact.mutate({
+          name,
+          email,
+          message,
         })
 
-        let error = 'Could not submit contact request right now.'
-        const json = (await response.json().catch(() => null)) as { error?: unknown } | null
-
-        if (typeof json?.error === 'string' && json.error.trim().length > 0) {
-          error = json.error
-        }
-
-        if (!response.ok) {
-          return {
-            ok: false,
-            error,
-          }
-        }
-
         return { ok: true }
-      } catch {
+      } catch (error) {
         return {
           ok: false,
-          error: 'Network error while sending contact request.',
+          error: getTrpcErrorMessage(error, 'Could not submit contact request right now.'),
         }
       }
     }
