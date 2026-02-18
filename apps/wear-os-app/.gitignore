@@ -1,0 +1,18 @@
+*.iml
+.DS_Store
+
+# Android Studio / IntelliJ
+.idea/
+*.ipr
+*.iws
+
+# Gradle / Kotlin caches
+.gradle/
+.kotlin/
+local.properties
+
+# Build artifacts
+**/build/
+captures/
+.externalNativeBuild/
+.cxx/

@@ -1,0 +1,15 @@
+{
+  "name": "@corphish/wear-os-app",
+  "private": true,
+  "scripts": {
+    "android:clean": "./gradlew clean",
+    "android:apk": "./gradlew :app:assembleDebug",
+    "android:bundle": "./gradlew :app:bundleRelease",
+    "android:lint": "./gradlew :app:lintDebug",
+    "android:test": "./gradlew :app:testDebugUnitTest",
+    "android:deploy": "./gradlew :app:installDebug",
+    "android:devices": "adb devices -l",
+    "android:uninstall": "adb uninstall com.sbue.superplanner || true"
+  }
+}
+
