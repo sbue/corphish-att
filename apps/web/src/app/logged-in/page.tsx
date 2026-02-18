@@ -22,7 +22,7 @@ export default async function LoggedInPage() {
       <div className='pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_10%_10%,rgba(123,242,192,0.08),transparent_35%),radial-gradient(circle_at_90%_5%,rgba(95,151,255,0.15),transparent_35%),radial-gradient(circle_at_70%_100%,rgba(138,100,255,0.14),transparent_40%)]' />
       <div className='pointer-events-none absolute inset-0 opacity-35 [background:linear-gradient(to_bottom,rgba(134,180,255,0.08)_1px,transparent_1px)] [background-size:100%_4px]' />
       <section className='relative mx-auto flex w-full max-w-3xl flex-col gap-6 rounded-3xl border border-[#30537a] bg-[#05080f]/95 p-8 shadow-[0_0_80px_rgba(90,165,255,0.15)]'>
-        <p className='text-xs tracking-[0.32em] text-[#8fd5ff]'>BUENAHORA AUTH</p>
+        <p className='text-xs tracking-[0.32em] text-[#8fd5ff]'>SANTIAGO BUENAHORA</p>
         <h1 className='text-3xl font-semibold text-[#dff4ff] sm:text-4xl'>You are logged in</h1>
         <p className='text-base text-[#b8def4]'>
           Signed in as <span className='font-semibold text-[#e9f7ff]'>{session.user.email}</span>

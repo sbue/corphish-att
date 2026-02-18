@@ -24,6 +24,7 @@
   },
   "dependencies": {
     "@corphish/config": "workspace:*",
+    "@corphish/db": "workspace:*",
     "@mastra/core": "^1.3.0",
     "@mastra/loggers": "^1.0.1",
     "@mastra/pg": "^1.3.0",

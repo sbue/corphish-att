@@ -3,8 +3,8 @@ import '@corphish/ui/globals.css'
 import '@xterm/xterm/css/xterm.css'
 
 export const metadata: Metadata = {
-  title: 'SANTIAGO | BUENAHORA Terminal',
-  description: 'Interactive terminal-style homepage for Buenahora',
+  title: 'Santiago Buenahora',
+  description: 'Interactive terminal-style personal website',
 }
 
 export default function RootLayout({
