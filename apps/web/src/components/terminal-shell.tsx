@@ -36,9 +36,12 @@ const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 const terminalLink = (label: string, url: string) => `\x1b]8;;${url}\u0007${label}\x1b]8;;\u0007`
 
 type AboutProfile = {
-  bio: string
+  bioPrefix: string
+  company: {
+    label: string
+    url: string
+  }
   links: {
-    primero: string
     linkedin: string
     twitter: string
   }
@@ -172,15 +175,7 @@ export function TerminalShell({ initialCommand }: TerminalShellProps) {
       try {
         const profile = await trpcClient.terminal.about.query()
 
-        return {
-          ok: true,
-          bio: profile.bio,
-          links: {
-            primero: profile.links.primero,
-            linkedin: profile.links.linkedin,
-            twitter: profile.links.twitter,
-          },
-        }
+        return { ok: true, ...profile }
       } catch (error) {
         return {
           ok: false,
@@ -209,10 +204,10 @@ export function TerminalShell({ initialCommand }: TerminalShellProps) {
     const renderAbout = (profile: AboutProfile) => {
       writeLine('')
       writeLine('\x1b[1;38;2;154;243;255m/about\x1b[0m')
-      writeLine(profile.bio)
+      writeLine(`${profile.bioPrefix}${terminalLink(profile.company.label, profile.company.url)}.`)
       writeLine('')
       writeLine(
-        `Links: ${terminalLink('Primero AI', profile.links.primero)} | ${terminalLink('LinkedIn', profile.links.linkedin)} | ${terminalLink('Twitter', profile.links.twitter)}`,
+        `${terminalLink('LinkedIn', profile.links.linkedin)} | ${terminalLink('Twitter', profile.links.twitter)}`,
       )
       writeLine('')
     }
@@ -345,7 +340,7 @@ export function TerminalShell({ initialCommand }: TerminalShellProps) {
       inputMode = 'contact-name'
       writeLine('')
       writeLine('\x1b[1;38;2;255;236;167m/contact\x1b[0m')
-      writeLine('Drop a quick note and Santiago will reach out.')
+      writeLine("Drop me a quick note and I'll get back to you.")
       writePrompt()
     }
 
@@ -393,7 +388,7 @@ export function TerminalShell({ initialCommand }: TerminalShellProps) {
       isRequestInFlight = false
 
       if (result.ok) {
-        writeLine('\x1b[38;2;175;255;179mMessage sent. Santiago will follow up.\x1b[0m')
+        writeLine("\x1b[38;2;175;255;179mGot it. I'll follow up soon.\x1b[0m")
       } else {
         writeLine(`\x1b[38;2;255;162;162m${result.error}\x1b[0m`)
       }
