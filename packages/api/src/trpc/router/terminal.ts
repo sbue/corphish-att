@@ -6,9 +6,12 @@ import { publicProcedure, router } from '@corphish/api/trpc/server'
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
 const ABOUT_PROFILE = {
-  bio: 'Santiago Buenahora is the Co-Founder and CTO of Primero AI',
+  bioPrefix: 'I (Santiago Buenahora) am the Co-Founder and CTO of ',
+  company: {
+    label: 'Primero AI',
+    url: 'https://primero.ai/',
+  },
   links: {
-    primero: 'https://primero.ai/',
     linkedin: 'https://www.linkedin.com/in/santiago-buenahora/',
     twitter: 'https://x.com/santizilla',
   },
