@@ -36,10 +36,21 @@ Railway sets `PORT` automatically at runtime.
 `railway.json` config:
 
 - Build: `corepack enable && pnpm install --frozen-lockfile && pnpm --filter @corphish/web build`
-- Start: runs `pnpm --filter @corphish/db run migrate:db` first, then starts `node apps/web/.next/standalone/apps/web/server.js`
+- Start: runs `pnpm --filter @corphish/db exec prisma migrate deploy --config prisma.config.ts` first, then starts `node apps/web/.next/standalone/apps/web/server.js`
 - Healthcheck: `/`
 
-### 4. Validate deployment
+### 4. Auto Deploy On Merge To Main
+
+This repository includes `.github/workflows/deploy-production.yml` to deploy on every push to `main` (including merged PRs).
+
+Set these GitHub repository secrets:
+
+- `RAILWAY_TOKEN` - Railway CLI token
+- `RAILWAY_PROJECT_ID` - Railway project id
+
+The workflow deploys service `web` to environment `production`.
+
+### 5. Validate deployment
 
 - Open `/` and confirm the page renders.
 - Hit `/api/trpc/greeting.hello?input=%7B%22name%22%3A%22railway%22%7D` and confirm a JSON response.
