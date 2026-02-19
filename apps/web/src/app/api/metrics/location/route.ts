@@ -1,7 +1,8 @@
 import { timingSafeEqual } from 'node:crypto'
 import { NextResponse } from 'next/server'
+import { PrismaService } from '@corphish/api/platform/database/application/prisma.service'
+import { createTrpcContext } from '@corphish/api/trpc/context'
 import { LOCATION_METRICS_WEBHOOK_KEY } from '@corphish/config'
-import { prisma } from '@corphish/db/client'
 
 const MAX_LOCATIONS_PER_REQUEST = 1000
 const WEBHOOK_KEY_HEADER = 'x-location-metrics-key'
@@ -11,7 +12,7 @@ export const runtime = 'nodejs'
 class ValidationError extends Error {}
 
 type ParsedLocation = {
-  tsMs: bigint
+  timestampUtc: Date
   lat: number
   lon: number
   accuracyM: number
@@ -63,8 +64,14 @@ function parseLocation(rawValue: unknown, index: number): ParsedLocation {
     throw new ValidationError(`Location at index ${index} has an invalid accuracyM.`)
   }
 
+  const timestampUtc = new Date(tsMs)
+
+  if (!Number.isFinite(timestampUtc.getTime())) {
+    throw new ValidationError(`Location at index ${index} has an invalid tsMs timestamp.`)
+  }
+
   return {
-    tsMs: BigInt(tsMs),
+    timestampUtc,
     lat,
     lon,
     accuracyM,
@@ -157,7 +164,10 @@ export async function POST(request: Request) {
   }
 
   try {
-    await prisma.locationPoint.createMany({
+    const trpcContext = await createTrpcContext()
+    const prismaService = trpcContext.app.get<PrismaService>(PrismaService)
+
+    await prismaService.client.locationPoint.createMany({
       data: locations,
     })
   } catch (error) {
