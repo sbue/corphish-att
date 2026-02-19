@@ -26,6 +26,10 @@ class LocationUploader(
             Log.d(AppConfig.LOG_TAG, "Upload skipped: queue is empty.")
             return UploadOutcome.NO_DATA
         }
+        if (AppConfig.API_KEY.isBlank()) {
+            Log.w(AppConfig.LOG_TAG, "Upload skipped: LOCATION_METRICS_WEBHOOK_KEY missing in build config.")
+            return UploadOutcome.RETRY
+        }
 
         val payload = JSONArray()
         batch.forEach { sample ->
@@ -42,6 +46,7 @@ class LocationUploader(
             .toRequestBody("application/json; charset=utf-8".toMediaType())
         val request = Request.Builder()
             .url(AppConfig.API_URL)
+            .header(AppConfig.LOCATION_METRICS_KEY_HEADER, AppConfig.API_KEY)
             .post(requestBody)
             .build()
 

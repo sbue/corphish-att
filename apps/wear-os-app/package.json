@@ -2,14 +2,17 @@
   "name": "@corphish/wear-os-app",
   "private": true,
   "scripts": {
+    "secret:pull": "bash ../../scripts/wear/pull-location-metrics-key.sh",
+    "secret:refresh": "pnpm run secret:pull",
     "android:clean": "./gradlew clean",
-    "android:apk": "./gradlew :app:assembleDebug",
-    "android:bundle": "./gradlew :app:bundleRelease",
+    "android:apk": "dotenv -e .env.local -- ./gradlew :app:assembleDebug",
+    "android:bundle": "dotenv -e .env.local -- ./gradlew :app:bundleRelease",
     "android:lint": "./gradlew :app:lintDebug",
     "android:test": "./gradlew :app:testDebugUnitTest",
-    "android:deploy": "./gradlew :app:installDebug",
+    "android:deploy": "dotenv -e .env.local -- ./gradlew :app:installDebug",
+    "android:apk:pull": "pnpm run secret:pull && pnpm run android:apk",
+    "android:deploy:pull": "pnpm run secret:pull && pnpm run android:deploy",
     "android:devices": "adb devices -l",
     "android:uninstall": "adb uninstall com.sbue.superplanner || true"
   }
 }
-

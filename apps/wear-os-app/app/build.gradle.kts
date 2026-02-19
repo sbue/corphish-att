@@ -5,6 +5,17 @@ plugins {
     alias(libs.plugins.ksp)
 }
 
+fun asBuildConfigString(value: String): String {
+    val escaped = value
+        .replace("\\", "\\\\")
+        .replace("\"", "\\\"")
+    return "\"$escaped\""
+}
+
+val locationMetricsApiUrl = System.getenv("LOCATION_METRICS_API_URL")
+    ?: "https://buenahora.com/api/metrics/location"
+val locationMetricsWebhookKey = System.getenv("LOCATION_METRICS_WEBHOOK_KEY") ?: ""
+
 android {
     namespace = "com.sbue.superplanner"
     compileSdk {
@@ -17,7 +28,8 @@ android {
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"
-
+        buildConfigField("String", "LOCATION_METRICS_API_URL", asBuildConfigString(locationMetricsApiUrl))
+        buildConfigField("String", "LOCATION_METRICS_WEBHOOK_KEY", asBuildConfigString(locationMetricsWebhookKey))
     }
 
     buildTypes {
@@ -39,6 +51,7 @@ android {
     useLibrary("wear-sdk")
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 

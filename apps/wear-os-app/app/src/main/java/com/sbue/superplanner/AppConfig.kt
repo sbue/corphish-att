@@ -6,6 +6,8 @@ object AppConfig {
     const val CAPTURE_INTERVAL_MS = 60_000L
     const val UPLOAD_PERIODIC_WORK_NAME = "upload_locations_periodic"
     const val UPLOAD_WORK_NAME = "upload_locations"
-    const val API_URL = "https://webhook.site/28531cc4-c1c6-4b76-ba9f-fa9a600d69fb"
+    const val LOCATION_METRICS_KEY_HEADER = "x-location-metrics-key"
+    val API_URL: String = BuildConfig.LOCATION_METRICS_API_URL
+    val API_KEY: String = BuildConfig.LOCATION_METRICS_WEBHOOK_KEY
     const val LOG_TAG = "SuperPlanner"
 }
