@@ -1,7 +1,10 @@
+import { timingSafeEqual } from 'node:crypto'
 import { NextResponse } from 'next/server'
+import { LOCATION_METRICS_WEBHOOK_KEY } from '@corphish/config'
 import { prisma } from '@corphish/db/client'
 
 const MAX_LOCATIONS_PER_REQUEST = 1000
+const WEBHOOK_KEY_HEADER = 'x-location-metrics-key'
 
 export const runtime = 'nodejs'
 
@@ -18,6 +21,21 @@ function isFiniteNumber(value: unknown): value is number {
   return typeof value === 'number' && Number.isFinite(value)
 }
 
+function hasValidWebhookKey(rawValue: string | null): boolean {
+  if (!rawValue || !LOCATION_METRICS_WEBHOOK_KEY) {
+    return false
+  }
+
+  const expectedKey = Buffer.from(LOCATION_METRICS_WEBHOOK_KEY)
+  const receivedKey = Buffer.from(rawValue)
+
+  if (expectedKey.length !== receivedKey.length) {
+    return false
+  }
+
+  return timingSafeEqual(expectedKey, receivedKey)
+}
+
 function parseLocation(rawValue: unknown, index: number): ParsedLocation {
   if (typeof rawValue !== 'object' || rawValue === null || Array.isArray(rawValue)) {
     throw new ValidationError(`Location at index ${index} must be an object.`)
@@ -29,7 +47,7 @@ function parseLocation(rawValue: unknown, index: number): ParsedLocation {
   const lon = rawLocation.lon
   const accuracyM = rawLocation.accuracyM
 
-  if (typeof tsMs !== 'number' || !Number.isSafeInteger(tsMs)) {
+  if (typeof tsMs !== 'number' || !Number.isSafeInteger(tsMs) || tsMs < 0) {
     throw new ValidationError(`Location at index ${index} has an invalid tsMs.`)
   }
 
@@ -66,6 +84,30 @@ function parseLocations(payload: unknown): ParsedLocation[] {
 }
 
 export async function POST(request: Request) {
+  if (!LOCATION_METRICS_WEBHOOK_KEY) {
+    console.error('LOCATION_METRICS_WEBHOOK_KEY is not configured.')
+
+    return NextResponse.json(
+      {
+        error: 'Webhook is not configured.',
+      },
+      {
+        status: 500,
+      },
+    )
+  }
+
+  if (!hasValidWebhookKey(request.headers.get(WEBHOOK_KEY_HEADER))) {
+    return NextResponse.json(
+      {
+        error: 'Unauthorized.',
+      },
+      {
+        status: 401,
+      },
+    )
+  }
+
   let payload: unknown
 
   try {
@@ -119,7 +161,7 @@ export async function POST(request: Request) {
       data: locations,
     })
   } catch (error) {
-    console.error('Failed to persist location tracking payload', error)
+    console.error('Failed to persist location metrics payload', error)
 
     return NextResponse.json(
       {
