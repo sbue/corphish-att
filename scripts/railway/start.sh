@@ -14,6 +14,11 @@ fi
 # Railway deploys this script for production runtime; default to prod Infisical env unless overridden.
 export INFISICAL_ENV="${INFISICAL_ENV:-prod}"
 
+if [[ -z "${DATABASE_URL:-}" ]]; then
+  echo '[railway][error] DATABASE_URL is not set; cannot run Prisma migrations.' >&2
+  exit 1
+fi
+
 SOURCE_STATIC_DIR='apps/web/.next/static'
 TARGET_STATIC_DIR='apps/web/.next/standalone/apps/web/.next/static'
 
@@ -25,5 +30,8 @@ if [[ -d "$SOURCE_STATIC_DIR" ]]; then
   cp -R "$SOURCE_STATIC_DIR"/. "$TARGET_STATIC_DIR"/
 fi
 
-bash ./scripts/with-infisical.sh "${PNPM_CMD[@]}" --filter @corphish/db run migrate:db
+echo '[railway] Running Prisma migrations...'
+bash ./scripts/with-infisical.sh "${PNPM_CMD[@]}" --filter @corphish/db exec prisma migrate deploy --config prisma.config.ts
+echo '[railway] Prisma migrations completed.'
+
 bash ./scripts/with-infisical.sh node apps/web/.next/standalone/apps/web/server.js
