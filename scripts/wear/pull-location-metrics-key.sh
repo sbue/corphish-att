@@ -13,7 +13,6 @@ mkdir -p "$WEAR_APP_DIR"
 if [[ -z "${INFISICAL_ENV:-}" ]]; then
   export INFISICAL_ENV='dev'
 fi
-export INFISICAL_ENABLED='true'
 
 KEY_VALUE="$(
   cd "$REPO_ROOT"

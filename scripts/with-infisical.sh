@@ -8,8 +8,8 @@ Usage:
   scripts/with-infisical.sh <command> [args...]
 
 Behavior:
-  - Uses Infisical when INFISICAL_ENABLED=true, or when set to auto and config exists.
-  - Falls back to running the command directly when INFISICAL_ENABLED=false.
+  - Uses Infisical when auth/project context is present.
+  - Falls back to running the command directly when context is missing.
 EOF
 }
 
@@ -18,27 +18,11 @@ if [[ $# -eq 0 ]]; then
   exit 1
 fi
 
-INFISICAL_MODE="$(echo "${INFISICAL_ENABLED:-auto}" | tr '[:upper:]' '[:lower:]')"
 USE_INFISICAL='false'
 
-case "$INFISICAL_MODE" in
-  true|1|yes|y|on)
-    USE_INFISICAL='true'
-    ;;
-  false|0|no|n|off)
-    USE_INFISICAL='false'
-    ;;
-  auto|'')
-    if [[ -n "${INFISICAL_TOKEN:-}" || -f ".infisical.json" ]]; then
-      USE_INFISICAL='true'
-    fi
-    ;;
-  *)
-    echo "Invalid INFISICAL_ENABLED value: $INFISICAL_MODE" >&2
-    echo "Expected true, false, or auto." >&2
-    exit 1
-    ;;
-esac
+if [[ -n "${INFISICAL_TOKEN:-}" || -f ".infisical.json" || -n "${INFISICAL_PROJECT_ID:-}" ]]; then
+  USE_INFISICAL='true'
+fi
 
 if [[ "$USE_INFISICAL" != 'true' ]]; then
   exec "$@"
@@ -53,9 +37,10 @@ else
   INFISICAL_CMD=(npx -y @infisical/cli)
 fi
 
-if [[ -z "${INFISICAL_TOKEN:-}" && ! -f ".infisical.json" ]]; then
-  echo "Infisical local auth context not found (INFISICAL_TOKEN/.infisical.json)." >&2
-  echo "Attempting CLI session auth context." >&2
+if [[ -n "${INFISICAL_TOKEN:-}" && -z "${INFISICAL_PROJECT_ID:-}" && ! -f ".infisical.json" ]]; then
+  echo "INFISICAL_PROJECT_ID is required when using INFISICAL_TOKEN without .infisical.json." >&2
+  echo "Set INFISICAL_PROJECT_ID or run 'npx @infisical/cli init' to generate .infisical.json." >&2
+  exit 1
 fi
 
 INFISICAL_ARGS=(
