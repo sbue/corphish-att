@@ -27,14 +27,18 @@ import com.sbue.superplanner.presentation.MainActivity
 import com.sbue.superplanner.work.TrackingScheduler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
 class LocationTrackingService : Service() {
     private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private var locationCallback: LocationCallback? = null
+    private var uploadLoopJob: Job? = null
 
     override fun onCreate() {
         super.onCreate()
@@ -58,13 +62,15 @@ class LocationTrackingService : Service() {
         }
 
         startForeground(NOTIFICATION_ID, buildNotification())
+        TrackingScheduler.cancelPeriodicUpload(this)
         startLocationUpdates()
-        TrackingScheduler.schedulePeriodicUpload(this)
+        startUploadLoop()
 
         return START_STICKY
     }
 
     override fun onDestroy() {
+        stopUploadLoop()
         stopLocationUpdates()
         serviceScope.cancel()
         super.onDestroy()
@@ -124,6 +130,7 @@ class LocationTrackingService : Service() {
     }
 
     private fun stopTrackingAndSelf(clearEnabled: Boolean) {
+        stopUploadLoop()
         stopLocationUpdates()
         if (clearEnabled) {
             TrackingPreferences.setTrackingEnabled(this, false)
@@ -132,6 +139,24 @@ class LocationTrackingService : Service() {
         }
         stopForeground(STOP_FOREGROUND_REMOVE)
         stopSelf()
+    }
+
+    private fun startUploadLoop() {
+        if (uploadLoopJob != null) {
+            return
+        }
+
+        uploadLoopJob = serviceScope.launch {
+            while (isActive) {
+                TrackingScheduler.enqueueUpload(applicationContext)
+                delay(AppConfig.CAPTURE_INTERVAL_MS)
+            }
+        }
+    }
+
+    private fun stopUploadLoop() {
+        uploadLoopJob?.cancel()
+        uploadLoopJob = null
     }
 
     private fun hasLocationPermission(): Boolean {

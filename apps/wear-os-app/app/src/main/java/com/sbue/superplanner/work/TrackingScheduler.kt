@@ -5,7 +5,6 @@ import androidx.work.Constraints
 import androidx.work.ExistingWorkPolicy
 import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequestBuilder
-import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import com.sbue.superplanner.AppConfig
 
@@ -28,22 +27,10 @@ object TrackingScheduler {
     }
 
     fun schedulePeriodicUpload(context: Context) {
-        val constraints = Constraints.Builder()
-            .setRequiredNetworkType(NetworkType.CONNECTED)
-            .build()
-        val request = PeriodicWorkRequestBuilder<UploadWorker>(
-            AppConfig.UPLOAD_PERIOD_MINUTES,
-            java.util.concurrent.TimeUnit.MINUTES
-        )
-            .setConstraints(constraints)
-            .build()
-
-        WorkManager.getInstance(context)
-            .enqueueUniquePeriodicWork(
-                AppConfig.UPLOAD_PERIODIC_WORK_NAME,
-                androidx.work.ExistingPeriodicWorkPolicy.UPDATE,
-                request
-            )
+        // WorkManager periodic work has a 15-minute minimum interval.
+        // For temporary minute-scale testing, rely on the foreground service loop
+        // and trigger an immediate upload attempt here.
+        enqueueUpload(context)
     }
 
     fun cancelPeriodicUpload(context: Context) {
