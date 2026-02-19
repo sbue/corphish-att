@@ -16,6 +16,11 @@ val locationMetricsApiUrl = System.getenv("LOCATION_METRICS_API_URL")
     ?: "https://buenahora.com/api/metrics/location"
 val locationMetricsWebhookKey = System.getenv("LOCATION_METRICS_WEBHOOK_KEY") ?: ""
 
+require(locationMetricsWebhookKey.isNotBlank()) {
+    "Missing LOCATION_METRICS_WEBHOOK_KEY. Run " +
+        "'pnpm --filter @corphish/wear-os-app secret:pull' or export LOCATION_METRICS_WEBHOOK_KEY."
+}
+
 android {
     namespace = "com.sbue.superplanner"
     compileSdk {
