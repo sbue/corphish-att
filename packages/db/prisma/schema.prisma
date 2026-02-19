@@ -22,3 +22,15 @@ model ContactSubmission {
 
   @@index([createdAt])
 }
+
+model LocationPoint {
+  id        String   @id @default(cuid())
+  tsMs      BigInt
+  lat       Float
+  lon       Float
+  accuracyM Float
+  createdAt DateTime @default(now())
+
+  @@index([tsMs])
+  @@index([createdAt])
+}

@@ -11,3 +11,5 @@ export const AUTH_RESEND_KEY = process.env.AUTH_RESEND_KEY ?? ''
 export const AUTH_RESEND_FROM = process.env.AUTH_RESEND_FROM ?? 'onboarding@resend.dev'
 export const AUTH_TRUST_HOST = (process.env.AUTH_TRUST_HOST ?? 'false').toLowerCase() === 'true'
 export const AUTH_ALLOWED_EMAIL = (process.env.AUTH_ALLOWED_EMAIL ?? '').trim().toLowerCase()
+
+export const LOCATION_METRICS_WEBHOOK_KEY = process.env.LOCATION_METRICS_WEBHOOK_KEY ?? ''

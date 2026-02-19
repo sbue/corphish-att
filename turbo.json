@@ -10,7 +10,8 @@
     "AUTH_TRUST_HOST",
     "AUTH_ALLOWED_EMAIL",
     "AUTH_RESEND_KEY",
-    "AUTH_RESEND_FROM"
+    "AUTH_RESEND_FROM",
+    "LOCATION_METRICS_WEBHOOK_KEY"
   ],
   "tasks": {
     "build": {
