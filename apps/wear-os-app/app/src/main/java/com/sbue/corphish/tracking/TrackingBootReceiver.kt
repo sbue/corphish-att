@@ -1,9 +1,9 @@
-package com.sbue.superplanner.tracking
+package com.sbue.corphish.tracking
 
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import com.sbue.superplanner.work.TrackingScheduler
+import com.sbue.corphish.work.TrackingScheduler
 
 class TrackingBootReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {

@@ -1,17 +1,17 @@
-package com.sbue.superplanner.presentation
+package com.sbue.corphish.presentation
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.sbue.superplanner.data.ServiceLocator
-import com.sbue.superplanner.location.CaptureOutcome
-import com.sbue.superplanner.location.CaptureResult
-import com.sbue.superplanner.location.LocationCapture
-import com.sbue.superplanner.network.LocationUploader
-import com.sbue.superplanner.network.UploadStatus
-import com.sbue.superplanner.tracking.LocationTrackingService
-import com.sbue.superplanner.tracking.TrackingPreferences
-import com.sbue.superplanner.work.TrackingScheduler
+import com.sbue.corphish.data.ServiceLocator
+import com.sbue.corphish.location.CaptureOutcome
+import com.sbue.corphish.location.CaptureResult
+import com.sbue.corphish.location.LocationCapture
+import com.sbue.corphish.network.LocationUploader
+import com.sbue.corphish.network.UploadStatus
+import com.sbue.corphish.tracking.LocationTrackingService
+import com.sbue.corphish.tracking.TrackingPreferences
+import com.sbue.corphish.work.TrackingScheduler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

@@ -1,4 +1,4 @@
-package com.sbue.superplanner.tracking
+package com.sbue.corphish.tracking
 
 import android.content.Context
 

@@ -1,11 +1,11 @@
-package com.sbue.superplanner.work
+package com.sbue.corphish.work
 
 import android.content.Context
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
-import com.sbue.superplanner.data.ServiceLocator
-import com.sbue.superplanner.network.LocationUploader
-import com.sbue.superplanner.network.UploadStatus
+import com.sbue.corphish.data.ServiceLocator
+import com.sbue.corphish.network.LocationUploader
+import com.sbue.corphish.network.UploadStatus
 
 class UploadWorker(
     appContext: Context,

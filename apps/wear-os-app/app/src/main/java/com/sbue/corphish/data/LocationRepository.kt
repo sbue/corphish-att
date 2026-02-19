@@ -1,4 +1,4 @@
-package com.sbue.superplanner.data
+package com.sbue.corphish.data
 
 import androidx.room.withTransaction
 import kotlinx.coroutines.flow.Flow

@@ -1,4 +1,4 @@
-package com.sbue.superplanner.tracking
+package com.sbue.corphish.tracking
 
 import android.Manifest
 import android.app.NotificationChannel
@@ -20,11 +20,11 @@ import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
-import com.sbue.superplanner.AppConfig
-import com.sbue.superplanner.data.LocationSampleEntity
-import com.sbue.superplanner.data.ServiceLocator
-import com.sbue.superplanner.presentation.MainActivity
-import com.sbue.superplanner.work.TrackingScheduler
+import com.sbue.corphish.AppConfig
+import com.sbue.corphish.data.LocationSampleEntity
+import com.sbue.corphish.data.ServiceLocator
+import com.sbue.corphish.presentation.MainActivity
+import com.sbue.corphish.work.TrackingScheduler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -185,7 +185,7 @@ class LocationTrackingService : Service() {
         manager.createNotificationChannel(
             NotificationChannel(
                 NOTIFICATION_CHANNEL_ID,
-                getString(com.sbue.superplanner.R.string.tracking_notification_channel_name),
+                getString(com.sbue.corphish.R.string.tracking_notification_channel_name),
                 NotificationManager.IMPORTANCE_LOW
             )
         )
@@ -193,9 +193,9 @@ class LocationTrackingService : Service() {
 
     private fun buildNotification() =
         NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
-            .setSmallIcon(com.sbue.superplanner.R.mipmap.ic_launcher)
-            .setContentTitle(getString(com.sbue.superplanner.R.string.tracking_notification_title))
-            .setContentText(getString(com.sbue.superplanner.R.string.tracking_notification_text))
+            .setSmallIcon(com.sbue.corphish.R.mipmap.ic_launcher)
+            .setContentTitle(getString(com.sbue.corphish.R.string.tracking_notification_title))
+            .setContentText(getString(com.sbue.corphish.R.string.tracking_notification_text))
             .setOngoing(true)
             .setContentIntent(mainPendingIntent())
             .build()
@@ -213,8 +213,8 @@ class LocationTrackingService : Service() {
     }
 
     companion object {
-        private const val ACTION_START = "com.sbue.superplanner.action.START_TRACKING"
-        private const val ACTION_STOP = "com.sbue.superplanner.action.STOP_TRACKING"
+        private const val ACTION_START = "com.sbue.corphish.action.START_TRACKING"
+        private const val ACTION_STOP = "com.sbue.corphish.action.STOP_TRACKING"
         private const val NOTIFICATION_CHANNEL_ID = "location_tracking"
         private const val NOTIFICATION_ID = 2201
 

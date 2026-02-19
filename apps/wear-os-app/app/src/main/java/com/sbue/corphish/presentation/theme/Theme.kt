@@ -1,4 +1,4 @@
-package com.sbue.superplanner.presentation.theme
+package com.sbue.corphish.presentation.theme
 
 import androidx.compose.runtime.Composable
 import androidx.wear.compose.material.MaterialTheme

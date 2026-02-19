@@ -1,4 +1,4 @@
-package com.sbue.superplanner.location
+package com.sbue.corphish.location
 
 import android.content.Context
 import android.content.pm.PackageManager
@@ -10,10 +10,10 @@ import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
-import com.sbue.superplanner.AppConfig
-import com.sbue.superplanner.data.LocationSampleEntity
-import com.sbue.superplanner.data.ServiceLocator
-import com.sbue.superplanner.work.TrackingScheduler
+import com.sbue.corphish.AppConfig
+import com.sbue.corphish.data.LocationSampleEntity
+import com.sbue.corphish.data.ServiceLocator
+import com.sbue.corphish.work.TrackingScheduler
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withTimeoutOrNull
 import android.location.LocationManager

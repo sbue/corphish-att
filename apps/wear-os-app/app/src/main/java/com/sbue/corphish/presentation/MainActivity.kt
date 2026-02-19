@@ -1,4 +1,4 @@
-package com.sbue.superplanner.presentation
+package com.sbue.corphish.presentation
 
 import android.Manifest
 import android.content.Context
@@ -42,7 +42,7 @@ import androidx.wear.compose.material.ToggleChipDefaults
 import androidx.wear.compose.material.rememberScalingLazyListState
 import androidx.wear.compose.material.ScalingLazyColumn
 import androidx.wear.tooling.preview.devices.WearDevices
-import com.sbue.superplanner.presentation.theme.SuperPlannerTheme
+import com.sbue.corphish.presentation.theme.SuperPlannerTheme
 import java.text.DateFormat
 import java.util.Date
 

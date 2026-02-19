@@ -1,10 +1,10 @@
-package com.sbue.superplanner.work
+package com.sbue.corphish.work
 
 import android.content.Context
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
-import com.sbue.superplanner.AppConfig
-import com.sbue.superplanner.location.LocationCapture
+import com.sbue.corphish.AppConfig
+import com.sbue.corphish.location.LocationCapture
 
 class CaptureLocationWorker(
     appContext: Context,

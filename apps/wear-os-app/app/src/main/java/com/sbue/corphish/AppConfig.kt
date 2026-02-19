@@ -1,4 +1,4 @@
-package com.sbue.superplanner
+package com.sbue.corphish
 
 object AppConfig {
     const val MAX_QUEUE_SIZE = 100

@@ -1,8 +1,8 @@
-package com.sbue.superplanner.network
+package com.sbue.corphish.network
 
 import android.util.Log
-import com.sbue.superplanner.AppConfig
-import com.sbue.superplanner.data.LocationRepository
+import com.sbue.corphish.AppConfig
+import com.sbue.corphish.data.LocationRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaType

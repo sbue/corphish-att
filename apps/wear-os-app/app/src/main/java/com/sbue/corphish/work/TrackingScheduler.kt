@@ -1,4 +1,4 @@
-package com.sbue.superplanner.work
+package com.sbue.corphish.work
 
 import android.content.Context
 import androidx.work.Constraints
@@ -6,7 +6,7 @@ import androidx.work.ExistingWorkPolicy
 import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
-import com.sbue.superplanner.AppConfig
+import com.sbue.corphish.AppConfig
 
 object TrackingScheduler {
     fun enqueueUpload(context: Context) {

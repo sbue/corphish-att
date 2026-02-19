@@ -22,13 +22,13 @@ require(locationMetricsWebhookKey.isNotBlank()) {
 }
 
 android {
-    namespace = "com.sbue.superplanner"
+    namespace = "com.sbue.corphish"
     compileSdk {
         version = release(36)
     }
 
     defaultConfig {
-        applicationId = "com.sbue.superplanner"
+        applicationId = "com.sbue.corphish"
         minSdk = 30
         targetSdk = 36
         versionCode = 1

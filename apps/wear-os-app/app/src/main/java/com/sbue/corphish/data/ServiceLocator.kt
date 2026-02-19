@@ -1,4 +1,4 @@
-package com.sbue.superplanner.data
+package com.sbue.corphish.data
 
 import android.content.Context
 import okhttp3.OkHttpClient

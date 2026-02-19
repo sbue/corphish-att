@@ -13,6 +13,6 @@
     "android:apk:pull": "pnpm run secret:pull && pnpm run android:apk",
     "android:deploy:pull": "pnpm run secret:pull && pnpm run android:deploy",
     "android:devices": "adb devices -l",
-    "android:uninstall": "adb uninstall com.sbue.superplanner || true"
+    "android:uninstall": "adb uninstall com.sbue.corphish || true"
   }
 }
