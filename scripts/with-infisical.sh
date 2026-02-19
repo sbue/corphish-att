@@ -44,12 +44,6 @@ if [[ "$USE_INFISICAL" != 'true' ]]; then
   exec "$@"
 fi
 
-if [[ -z "${INFISICAL_TOKEN:-}" && ! -f ".infisical.json" ]]; then
-  echo "Infisical is enabled, but no auth context was found." >&2
-  echo "Set INFISICAL_TOKEN or initialize local project config with 'npx @infisical/cli init'." >&2
-  exit 1
-fi
-
 INFISICAL_ENV="${INFISICAL_ENV:-dev}"
 INFISICAL_SECRET_PATH="${INFISICAL_SECRET_PATH:-/}"
 
@@ -57,6 +51,11 @@ if command -v infisical >/dev/null 2>&1; then
   INFISICAL_CMD=(infisical)
 else
   INFISICAL_CMD=(npx -y @infisical/cli)
+fi
+
+if [[ -z "${INFISICAL_TOKEN:-}" && ! -f ".infisical.json" ]]; then
+  echo "Infisical local auth context not found (INFISICAL_TOKEN/.infisical.json)." >&2
+  echo "Attempting CLI session auth context." >&2
 fi
 
 INFISICAL_ARGS=(
