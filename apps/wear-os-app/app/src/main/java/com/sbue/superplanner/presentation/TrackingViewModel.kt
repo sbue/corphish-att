@@ -3,17 +3,16 @@ package com.sbue.superplanner.presentation
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.work.WorkManager
-import com.sbue.superplanner.AppConfig
 import com.sbue.superplanner.data.ServiceLocator
 import com.sbue.superplanner.location.CaptureOutcome
 import com.sbue.superplanner.location.CaptureResult
 import com.sbue.superplanner.location.LocationCapture
 import com.sbue.superplanner.network.LocationUploader
 import com.sbue.superplanner.network.UploadStatus
+import com.sbue.superplanner.tracking.LocationTrackingService
+import com.sbue.superplanner.tracking.TrackingPreferences
 import com.sbue.superplanner.work.TrackingScheduler
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -21,7 +20,6 @@ import kotlinx.coroutines.launch
 
 class TrackingViewModel(application: Application) : AndroidViewModel(application) {
     private val repository = ServiceLocator.locationRepository(application)
-    private val workManager = WorkManager.getInstance(application)
 
     private val queueCountState = MutableStateFlow(0)
     val queueCount: StateFlow<Int> = queueCountState.asStateFlow()
@@ -36,9 +34,7 @@ class TrackingViewModel(application: Application) : AndroidViewModel(application
     val status: StateFlow<UiStatus?> = statusState.asStateFlow()
 
     init {
-        viewModelScope.launch(Dispatchers.IO) {
-            trackingEnabledState.value = isCaptureWorkActive()
-        }
+        trackingEnabledState.value = TrackingPreferences.isTrackingEnabled(application)
         viewModelScope.launch(Dispatchers.IO) {
             repository.queueCount.collect { queueCountState.value = it }
         }
@@ -48,12 +44,16 @@ class TrackingViewModel(application: Application) : AndroidViewModel(application
     }
 
     fun setTrackingEnabled(enabled: Boolean) {
+        val app = getApplication<Application>()
+        TrackingPreferences.setTrackingEnabled(app, enabled)
         if (enabled) {
-            TrackingScheduler.schedulePeriodicCapture(getApplication())
+            TrackingScheduler.schedulePeriodicUpload(app)
+            LocationTrackingService.start(app)
             updateStatus("Tracking enabled.", isError = false)
         } else {
-            TrackingScheduler.cancelPeriodicCapture(getApplication())
-            TrackingScheduler.cancelPendingUpload(getApplication())
+            LocationTrackingService.stop(app)
+            TrackingScheduler.cancelPeriodicUpload(app)
+            TrackingScheduler.cancelPendingUpload(app)
             updateStatus("Tracking disabled.", isError = false)
         }
         trackingEnabledState.value = enabled
@@ -110,17 +110,6 @@ class TrackingViewModel(application: Application) : AndroidViewModel(application
 
     fun updateStatus(message: String, isError: Boolean) {
         statusState.value = UiStatus(message, isError)
-    }
-
-    private fun isCaptureWorkActive(): Boolean {
-        return try {
-            val infos = workManager
-                .getWorkInfosForUniqueWork(AppConfig.CAPTURE_WORK_NAME)
-                .get()
-            infos.any { !it.state.isFinished }
-        } catch (exception: Exception) {
-            false
-        }
     }
 }
 
